@@ -1,4 +1,4 @@
-from rest_framework.generics import CreateAPIView, RetrieveAPIView, UpdateAPIView
+from rest_framework.generics import RetrieveAPIView, UpdateAPIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth import get_user_model
@@ -6,6 +6,7 @@ from .serializers import UserSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 import requests
+from rest_framework.views import APIView
 from django.conf import settings
 from django.core.mail import send_mail
 from django.utils.http import urlsafe_base64_encode
@@ -13,32 +14,30 @@ from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
+from django.contrib.auth.hashers import make_password
+from rest_framework.permissions import AllowAny
 
 User = get_user_model()
 
-from rest_framework import status
-from rest_framework.response import Response
-from rest_framework.generics import CreateAPIView
-from django.contrib.auth import get_user_model
-from .serializers import UserSerializer
 
 User = get_user_model()
 
-class SignupView(CreateAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+class SignUpView(APIView):
+    permission_classes = [AllowAny]
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)  # No need to pass commit=False
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-
-    def perform_create(self, serializer):
-        user = serializer.save()  # Save the user directly
-        # user.set_password(user.password)
-        user.save()  # Save the user with the hashed password
+    def post(self, request):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            return Response({
+                "message": "User created successfully",
+                "user": serializer.data
+            }, status=status.HTTP_201_CREATED)
+        
+        return Response({
+            "message": "User creation failed",
+            "errors": serializer.errors
+        }, status=status.HTTP_400_BAD_REQUEST)
 
 
 
