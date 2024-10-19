@@ -47,8 +47,12 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'rest_framework_simplejwt',
-    'User'
+    'User',
+    'cloudinary_storage',
+    'cloudinary',
 ]
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -191,4 +195,11 @@ JAZZMIN_SETTINGS = {
     'changeform_format': 'stacked',
     'show_ui_builder': True,
     'navigation_expanded': False,
+}
+
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.environ.get('CLOUD_NAME'),
+    'API_KEY': '912634288932877',
+    'API_SECRET': os.environ.get('API_SECRET')
 }
