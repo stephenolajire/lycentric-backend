@@ -13,7 +13,7 @@ class UserSerializer(serializers.ModelSerializer):
             'id', 'email', 'first_name', 'last_name',
             'phone_number', 'state', 'country',
             'city_or_town', 'local_government',
-            'nearest_bus_stop', 'house_address', 'date_joined'
+            'nearest_bus_stop', 'house_address', 'date_joined', 'password'
         ]
         extra_kwargs = {
             'date_joined': {'read_only': True}, 

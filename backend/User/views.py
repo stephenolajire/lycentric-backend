@@ -19,9 +19,6 @@ from rest_framework.permissions import AllowAny
 
 User = get_user_model()
 
-
-User = get_user_model()
-
 class SignUpView(APIView):
     permission_classes = [AllowAny]
 
