@@ -37,7 +37,7 @@ class SignupView(CreateAPIView):
 
     def perform_create(self, serializer):
         user = serializer.save()  # Save the user directly
-        user.set_password(user.password)  # Hash the password
+        # user.set_password(user.password)
         user.save()  # Save the user with the hashed password
 
 
