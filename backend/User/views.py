@@ -21,35 +21,16 @@ User = get_user_model()
 class SignupView(APIView):
     permission_classes = [AllowAny]  # Allow anyone to access this view
 
-    def post(self, request, format=None):
+    def post(self, request):
         serializer = UserSerializer(data=request.data)
-        
-        # Validate the incoming data
-        serializer.is_valid(raise_exception=True)
+        if serializer.is_valid():
+            user = serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        user = get_user_model()  # Get the custom user model
-        new_user = user.objects.create(
-            email=serializer.validated_data['email'],
-            first_name=serializer.validated_data['first_name'],
-            last_name=serializer.validated_data['last_name'],
-            phone_number=serializer.validated_data.get('phone_number', ''),
-            state=serializer.validated_data.get('state', ''),
-            country=serializer.validated_data.get('country', ''),
-            city_or_town=serializer.validated_data.get('city_or_town', ''),
-            local_government=serializer.validated_data.get('local_government', ''),
-            nearest_bus_stop=serializer.validated_data.get('nearest_bus_stop', ''),
-            house_address=serializer.validated_data.get('house_address', ''),
-            is_active=True,  # Assuming new users are active by default
-            is_staff=False,   # Assuming new users are not staff by default
-        )
-        
-        # Set and hash the password
-        new_user.password = make_password(serializer.validated_data['password'])
-        new_user.save()
+        # Log the validation errors
+        print(serializer.errors)  # For debugging purposes
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        # Create a response with the serialized user data
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
 
