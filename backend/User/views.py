@@ -29,7 +29,7 @@ class SignupView(CreateAPIView):
 
     def perform_create(self, serializer):
         user = serializer.save(commit=False)
-        user.set_password(serializer.validated_data['password']) 
+        user.set_password(user.password)
         user.save()
 
 
