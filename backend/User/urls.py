@@ -3,7 +3,7 @@ from . views import *
 
 
 urlpatterns = [
-  path("signup/", SignUpView.as_view()),
+  path("signup/", SignupView.as_view()),
   path("profile", GetUserView.as_view()),
   path("user/update/", UpdateUserProfile.as_view()),
   path('verify/email/', VerifyEmailView.as_view(), name='verify-email'),
