@@ -17,11 +17,10 @@ class UserSerializer(serializers.ModelSerializer):
             'date_joined', 'password'
         ]
     
-    def create(self, validated_data):
-        password = validated_data.pop('password')  # Extract the password
-        user = User.objects.create_user(
-            email=validated_data['email'],
-            password=password,  # Pass the password to create_user
-            **validated_data
-        )
-        return user
+        def create(self, validated_data):
+            password = validated_data.pop('password') 
+            
+            user = User.objects.create_user(
+                **validated_data,
+                password=password )
+            return user
