@@ -16,6 +16,14 @@ from django.utils.http import urlsafe_base64_decode
 
 User = get_user_model()
 
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.generics import CreateAPIView
+from django.contrib.auth import get_user_model
+from .serializers import UserSerializer
+
+User = get_user_model()
+
 class SignupView(CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -23,14 +31,15 @@ class SignupView(CreateAPIView):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
+        self.perform_create(serializer)  # No need to pass commit=False
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def perform_create(self, serializer):
-        user = serializer.save(commit=False)
-        user.set_password(user.password)
-        user.save()
+        user = serializer.save()  # Save the user directly
+        user.set_password(user.password)  # Hash the password
+        user.save()  # Save the user with the hashed password
+
 
 
 class GetUserView(RetrieveAPIView):
