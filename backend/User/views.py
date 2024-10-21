@@ -25,6 +25,14 @@ class SignupView(APIView):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
+            user.is_active = False
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+        token = token_generator.make_token(user)
+        verification_link = request.build_absolute_uri(reverse('verify_email', kwargs={'uidb64': uid, 'token': token}))
+
+        mail_subject = 'Activate your account'
+        message = f"Click the link to activate your account: {verification_link}"
+        send_mail(mail_subject, message, 'admin@example.com', [user.email])
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         # Log the validation errors
